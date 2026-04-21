@@ -50,7 +50,6 @@ export function StatCard({
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
     borderRadius: 20,
     overflow: 'hidden',
     shadowOffset: { width: 0, height: 8 },
