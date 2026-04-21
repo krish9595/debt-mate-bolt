@@ -1,24 +1,27 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TrendingUp, Clock, Users } from 'lucide-react-native';
+import { TrendingUp, Clock, Users, Plus } from 'lucide-react-native';
 import { useTheme } from '@/context/ThemeContext';
 import { useDebts } from '@/hooks/useDebts';
 import { StatCard } from '@/components/overview/StatCard';
 import { ActivityItem } from '@/components/overview/ActivityItem';
+import { AddDebtModal } from '@/components/records/AddDebtModal';
 import { BannerAd } from '@/components/ads/BannerAd';
 import { Card } from '@/components/shared/Card';
 import { Debt } from '@/types';
 
 export default function OverviewScreen() {
   const { theme } = useTheme();
-  const { debts, loading, fetchDebts } = useDebts();
+  const { debts, loading, fetchDebts, addDebt } = useDebts();
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => { fetchDebts(); }, []);
 
@@ -86,8 +89,16 @@ export default function OverviewScreen() {
         ListEmptyComponent={renderEmpty}
         refreshControl={<RefreshControl refreshing={loading} onRefresh={fetchDebts} tintColor={theme.primary} />}
         scrollIndicatorInsets={{ right: 1 }}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={[styles.listContent, { paddingBottom: 80 }]}
       />
+      <TouchableOpacity
+        style={[styles.fab, { backgroundColor: '#1D4ED8' }]}
+        onPress={() => setModalVisible(true)}
+        activeOpacity={0.8}
+      >
+        <Plus size={28} color="#FFFFFF" strokeWidth={3} />
+      </TouchableOpacity>
+      <AddDebtModal visible={modalVisible} onClose={() => setModalVisible(false)} onSubmit={addDebt} />
       <BannerAd />
     </SafeAreaView>
   );
@@ -104,4 +115,18 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 18, fontWeight: '800', marginBottom: 12, letterSpacing: -0.3, paddingHorizontal: 16, paddingVertical: 12 },
   emptyState: { paddingVertical: 48, alignItems: 'center' },
   emptyText: { fontSize: 15, textAlign: 'center', lineHeight: 24 },
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
 });
